@@ -12,7 +12,6 @@ app.use(express.static('public'));
 http.listen(port, function() {
 	// Display this message in the server console once the server is active
 	console.log('Listening on port ' + port);
-
 });
 
 // When a user connects over websocket,
@@ -21,42 +20,12 @@ io.on('connection', function(socket) {
 	// Display this message in the server console
 	console.log('A user connected!');
 
-	// Send an event named "test" to every client with io.sockets.emit() function (or just io.emit() for short)
-	// and with this event, send the string 'Hey everyone...' as the data
-	io.sockets.emit('test',  {sender: 'server', randomNumber: 5});
-
-	// When the server receives an event named "test",
-	socket.on('test', function(data) {
-		// Take whatever data was received and display it in the server console
+	// When the server receives a message named "new line",
+	socket.on('new line', function(data){
+		// Display the received data in the server console
 		console.log(data);
-
-		// Sends the message to the client console
-		socket.emit('test', 'I saw you click!');
-		// Sends this message to all the other clients except this one.
-		socket.broadcast.emit('test', 'Off with their heads!');
-	});
-
-	socket.on('click',function (event)
-	{
-		console.log('I saw you click!');
+		// Send the data in a message called "new line" to every connected client EXCEPT the client who sent this initial "new line" message
+		socket.broadcast.emit('new line', data);
 	});
 
 });	// End of SocketIO code
-
-
-
-// all other app.js boilerplate code is still above here
-
-io.on('connection', function(socket) {
-
-	socket.on('mousedown', function(data) {
-		console.log(data);
-		socket.broadcast.emit('mousedown', data);
-	});
-
-	socket.on('mousemove', function(data) {
-		console.log(data);
-		socket.broadcast.emit('mousemove', data);
-	});
-
-});
